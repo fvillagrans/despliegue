@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<title>prueba</title>
+
+	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+	<script>
+	
+		//var ws = io.connect('http://127.0.0.1:8080/');
+		var ws = io.connect('https://appstreaming.herokuapp.com/');
+		
+		var bandera=0;
+		window.URL = window.URL || window.webKitURL;
+		
+		window.addEventListener('load', init);
+		
+		function init(){
+			var canvas = document.querySelector('#miCanvas');
+			var video = document.querySelector('#miVideo');
+			var ctx = canvas.getContext('2d');
+			dFrame(ctx, video, canvas);
+		}
+
+		function dFrame(ctx,video,canvas){
+		 ctx.drawImage(video,0,0);
+		 var dataURL = canvas.toDataURL('image/jpeg',0.2);
+		 if(bandera!=0) ws.emit('newFrame',dataURL);
+		 requestAnimFrame(function(){
+			dFrame(ctx,video,canvas);
+		 });
+		}
+		
+		window.requestAnimFrame = (function(callback){
+			return window.requestAnimationFrame || window.webKitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback){ window.setTimeout(callback, 1000 / 100); }; 
+		})();		
+	
+		navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+	   if (navigator.getUserMedia) {
+		  navigator.getUserMedia( 
+			{video:true,audio:false},
+			 function(stream) { 
+				bandera=1;
+				document.querySelector('#miVideo').src = window.URL.createObjectURL(stream);
+			 },
+			 function(error) { console.log("Ocurrió el siguiente error: " + error); }
+		  );
+	   }
+	   else {
+		  alert('Sorry, the browser you are using doesn\'t support getUserMedia');
+		}
+	</script>
+</head>
+
+<style>
+ video{display:none}
+</style>
+
+<body>
+
+	<video id="miVideo"></video>
+	<canvas id="miCanvas" width="800" height="600" ></canvas>
+
+</body>
+</html>

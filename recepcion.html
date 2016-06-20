@@ -1,0 +1,22 @@
+<html>
+<head>
+	<title> Streaming video </title>
+	
+	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	
+	<script>
+
+		//var ws = io.connect('http://127.0.0.1:8080/');
+		var ws = io.connect('https://appstreaming.herokuapp.com/');
+
+		ws.on("setFrame", function ( imagen ){
+			document.querySelector("#imgVideo").src = imagen;			
+		});
+		
+	</script>
+</head>
+<body>
+	<img id="imgVideo">
+</body>
+	
